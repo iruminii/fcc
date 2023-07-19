@@ -1,0 +1,110 @@
+function checkCashRegister(price, cash, cid) {
+  // status constant
+  const STAT = {
+    insuf : "INSUFFICIENT_FUNDS",
+    closed : "CLOSED",
+    open: "OPEN"
+  };
+
+  // currency keys/values
+  const CURRENCY = {
+    "PENNY" : 0.01,
+    "NICKEL" : 0.05,
+    "DIME" : 0.1,
+    "QUARTER" : 0.25,
+    "ONE" : 1,
+    "FIVE" : 5,
+    "TEN" : 10,
+    "TWENTY" : 20,
+    "ONE HUNDRED" : 100
+  };
+
+  // get difference
+  let change = cash - price;
+  let status;
+
+  // hold sum in cash drawer
+  let avail = 0;
+  for(let prop in cid) {
+    avail+=cid[prop][1];
+  };
+
+  // make tmp var for decreasing, 
+  // fix to 2 decimals, make sure its a number
+  let tmpavail = Number(avail.toFixed(2));
+
+  // if not enough total change, end here
+  if(change > avail) {
+    status = STAT["insuf"];
+    change = [];
+    return { status, change };
+  };
+
+  // hold tmp values for decreasing 
+  let tmpc = change;
+  let tmpCid = [...cid].reverse();
+  // array to hold change given
+  let tmpArr = [];
+
+  // start looping through currency values in the drawer
+  for(let curr in tmpCid) {
+      // variable to hold the total amount of each currency to give
+      let cnt = 0;
+      // if change needed is greater than the current currency value 
+      // and change needed is less than total drawer money available
+      if(tmpc>=CURRENCY[tmpCid[curr][0]] && tmpc <= tmpavail) {
+        // if at pennies (last currency value) 
+        // and change is greater than available pennies
+        // not enough change is available
+        if(tmpCid[curr][0] === "PENNY" && tmpc > tmpCid[curr][1]) {
+          status = STAT["insuf"];
+          change = [];
+          return { status, change };
+        }
+        // while the drawer has at least one of the currency value 
+        // and the total change needed is more than the currency value
+        // decrease all amounts by the currency value and add 1 to the value's count
+        while(tmpCid[curr][1] >= CURRENCY[tmpCid[curr][0]] && tmpc-CURRENCY[tmpCid[curr][0]] >= 0) {
+          tmpc -= CURRENCY[tmpCid[curr][0]];
+          tmpc = Number(tmpc.toFixed(2));
+          cnt += 1;
+          tmpavail -= CURRENCY[tmpCid[curr][0]];
+          tmpavail = Number(tmpavail.toFixed(2));
+          tmpCid[curr][1] -= CURRENCY[tmpCid[curr][0]];
+          tmpCid[curr][1] = Number(tmpCid[curr][1].toFixed(2));
+        }
+      }
+        // once the currency value is done processing,
+        // add the currency and cnt*value to the array
+        tmpArr.push([tmpCid[curr][0], cnt*CURRENCY[tmpCid[curr][0]]]);
+      
+    }
+
+    // if finished going through the drawer
+    // and still change left over
+    // not enough funds
+    if(tmpc > 0) {
+      status = STAT["insuf"];
+      change = [];
+      return { status, change };
+    }
+
+  // if the change was exactly what was in the drawer
+  // close the drawer and reverse the array for least value first
+  if(change === avail) {
+    status = STAT["closed"];
+    change = tmpArr.reverse();
+    return { status, change };
+  }
+
+  // anything else means the change was more than enough
+  // return the array from greatest to least
+  else {
+    status = STAT["open"];
+
+    change = tmpArr.filter(elem => elem[1] > 0);
+    return { status, change };
+  }
+}
+
+checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
