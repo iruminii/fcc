@@ -1,0 +1,8 @@
+function palindrome(str) {
+  let tmp = str.split(/[^a-zA-z0-9]*_*/).join("").toLowerCase().trim();
+  return tmp === tmp.split("").reverse().join("");
+
+  return true;
+}
+
+palindrome("eye");
