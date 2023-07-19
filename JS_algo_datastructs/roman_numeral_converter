@@ -1,0 +1,50 @@
+function convertToRoman(num) {
+  const conv = {
+    1000 : "M",
+    900 : "CM",
+    500 : "D",
+    400 : "CD",
+    100 : "C",
+    90 : "XC",
+    50 : "L",
+    40 : "XL",
+    10 : "X",
+    9 : "IX",
+    5 : "V",
+    4 : "IV",
+    1 : "I"
+  };
+
+  let tmp = "";
+  let str = String(num);
+  for(let i = str.length - 1; i >= 0; i--) {
+    
+    let place = 10**i;
+    let check = str[str.length - 1 - i]*place;
+    let digit = str[str.length - 1 - i];
+    // if digit is in dictionary 
+    // directly get numerals depending  on 10's place
+    if(digit === "1" || digit === "4" 
+    || digit === "5" || digit === "9") {
+      tmp = tmp.concat(conv[check]);
+    }
+    // if digit is > 5, subtract 5 to get remainder
+    // add 5*10's place 
+    // create an array size of remainder containing 
+    // remainder* 10's place
+    else if (+digit > 5){
+      let rem = +digit - 5;
+      tmp = tmp.concat(conv[5*place]);
+      tmp = tmp.concat(Array(rem).fill(conv[place]).join('')); 
+    }
+    // if digit < 5, create array size of remainder containtng
+    // remainder * 10's place
+    else {
+      tmp = tmp.concat(Array(+digit).fill(conv[place]).join(''));
+    }
+  }
+
+ return tmp;
+}
+
+convertToRoman(36);
