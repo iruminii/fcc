@@ -1,0 +1,16 @@
+function rot13(str) {
+  return str.split("").map((cha) => {
+    let conv = cha.charCodeAt(0);
+    if(conv > 64 && conv < 91) {
+      let shifted = conv + 13;
+      if(shifted > 90) {
+        shifted = shifted - 90 + 64;
+      }
+      conv = shifted;
+    }
+    return String.fromCharCode(conv);
+    cha.charCodeAt(0)
+    }).join("");
+}
+
+rot13("SERR PBQR PNZC");
